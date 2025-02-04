@@ -1,93 +1,124 @@
-import { useAuth } from "../contexts/AuthContext";
-import { Line } from "react-chartjs-2";
+import React, { useState, useEffect } from "react";
+import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
 } from "chart.js";
 
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend
 );
 
-const Dashboard = () => {
-  const { user, logout } = useAuth();
+import Counter from "../components/Counter";
+import RichTextEditor from "../components/TextEditor";
+import UserForm from "../components/UserForm";
 
-  // Conditional check for user to prevent errors when user is not logged in
-  if (!user) {
-    return <div>Loading...</div>; // or a redirect to login
-  }
+interface UserData {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+}
+
+const Dashboard: React.FC = () => {
+  const [userData, setUserData] = useState<UserData>({
+    id: "",
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+  });
+
+  const [count, setCount] = useState<number>(0);
+
+  useEffect(() => {
+    const storedData = localStorage.getItem("userData");
+    if (storedData) {
+      setUserData(JSON.parse(storedData));
+    }
+  }, []);
 
   const chartData = {
-    labels: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+    labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
     datasets: [
       {
-        label: "User Activity",
-        data: [3, 5, 2, 8, 6],
-        borderColor: "rgb(75, 192, 192)",
-        tension: 0.4,
+        label: "User Activity (Counter)",
+        data: [count, count + 2, count + 4, count + 5],
+        backgroundColor: "rgba(75, 192, 192, 0.5)",
+        borderColor: "rgba(75, 192, 192, 1)",
+        borderWidth: 1,
       },
     ],
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <header className="bg-white shadow-sm rounded-lg p-6 mb-8">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <img
-              src={
-                "https://static.vecteezy.com/system/resources/thumbnails/027/951/137/small_2x/stylish-spectacles-guy-3d-avatar-character-illustrations-png.png"
-              }
-              alt={`${user.displayName}'s avatar`} // Updated alt text
-              className="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
-            />
-            <div>
-              <h2 className="text-2xl font-bold text-gray-800">Welcome, {user.displayName}</h2>
-              <p className="text-sm text-gray-500">{user.email}</p>
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-blue-100 p-8 space-y-6">
+     
+      <header className="flex justify-between items-center bg-white rounded-2xl shadow-md p-6 mb-6">
+        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+          Dashboard
+        </h1>
+        <div className="flex items-center space-x-4">
+          <span className="text-gray-600 font-medium">Welcome</span>
+          <div className="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">
+            {userData.name ? userData.name[0].toUpperCase() : 'U'}
           </div>
-          {/* Logout Button (optional) */}
-          <button
-            onClick={logout}
-            className="bg-red-500 text-white rounded px-4 py-2"
-          >
-            Logout
-          </button>
         </div>
       </header>
 
-      <section className="bg-white shadow-sm rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-gray-800 mb-6">User Activity Trends</h3>
-        <div className="w-full h-96">
-          <Line
-            data={chartData}
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: {
-                  position: "top",
-                },
-                tooltip: {
-                  enabled: true,
-                },
-              },
-            }}
-          />
+    
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        <div className="bg-white rounded-3xl shadow-xl p-6 transform transition-all hover:scale-[1.02] hover:shadow-2xl">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+            Activity Counter
+          </h2>
+          <div className="flex justify-center items-center">
+            <Counter count={count} setCount={setCount} />
+          </div>
         </div>
-      </section>
+
+        <div className="bg-white rounded-3xl shadow-xl p-6 transform transition-all hover:scale-[1.02] hover:shadow-2xl">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+            Text Editor
+          </h2>
+          <RichTextEditor userData={userData} />
+        </div>
+
+        <div className="bg-white rounded-3xl shadow-xl p-6 transform transition-all hover:scale-[1.02] hover:shadow-2xl">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+            User Profile
+          </h2>
+          <UserForm userData={userData} setUserData={setUserData} />
+        </div>
+
+        <div className="bg-white rounded-3xl shadow-xl p-6 transform transition-all hover:scale-[1.02] hover:shadow-2xl">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+            Activity Trends
+          </h2>
+          <div className="h-64 flex items-center justify-center">
+            <Bar 
+              data={chartData} 
+              options={{ 
+                responsive: true, 
+                maintainAspectRatio: false 
+              }} 
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
