@@ -2,14 +2,13 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth, signInWithGoogle, logout } from "../firebase";
 
-// Define the type for the AuthContext value
+
 interface AuthContextType {
   user: User | null;
   signInWithGoogle: () => void;
   logout: () => void;
 }
 
-// Initialize AuthContext with a proper type
 const AuthContext = createContext<AuthContextType | null>(null);
 
 // AuthProvider Component
