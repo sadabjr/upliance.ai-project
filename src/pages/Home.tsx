@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import Counter from '../components/Counter';
 import UserForm from '../components/UserForm';
 import RichTextEditor from '../components/RichTextEditor';
 
-const Card = ({ children, title, description }) => (
+interface CardProps {
+  title: string;
+  description?: string;
+  children: ReactNode;
+}
+
+const Card = ({ children, title, description }: CardProps) => (
   <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden">
     <div className="p-6">
       <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">{title}</h2>

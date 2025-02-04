@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 import { useSpring, animated } from '@react-spring/web';
 
 const Counter = () => {
-  const [count, setCount] = useState(() => {
+  const [count, setCount] = useState<number>(() => {
     const saved = localStorage.getItem('counter');
     return saved ? parseInt(saved) : 0;
   });
 
   const [springs, api] = useSpring(() => ({
-    from: { backgroundColor: 'rgb(243, 244, 246)' },
+    from: { backgroundColor: 'rgb(243, 244, 246)' } as { backgroundColor: string },
   }));
 
   useEffect(() => {

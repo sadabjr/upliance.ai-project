@@ -16,31 +16,38 @@ const initialFormData: Omit<UserData, 'id'> = {
   address: '',
 };
 
+// Typing formErrors to ensure proper structure
+interface FormErrors {
+  name?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+}
+
 const UserForm = () => {
-  const [formData, setFormData] = useState(initialFormData);
-  const [formErrors, setFormErrors] = useState({}); 
+  const [formData, setFormData] = useState<Omit<UserData, 'id'>>(initialFormData);
+  const [formErrors, setFormErrors] = useState<FormErrors>({}); 
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (Object.keys(formData).some(key => formData[key] !== initialFormData[key])) { 
+      if (Object.keys(formData).some(key => formData[key as keyof typeof formData] !== initialFormData[key as keyof typeof initialFormData])) { 
         e.preventDefault();
       }
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [formData]); 
+  }, [formData]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    setFormErrors(prevErrors => ({ ...prevErrors, [name]: '' })); 
+    setFormErrors(prevErrors => ({ ...prevErrors, [name]: '' }));
   };
 
-
   const validateForm = () => {
-    let errors:any = {};
+    let errors: FormErrors = {};
     if (!formData.name.trim()) {
       errors.name = "Name is required";
     }
@@ -56,7 +63,7 @@ const UserForm = () => {
       errors.address = "Address is required";
     }
     setFormErrors(errors);
-    return Object.keys(errors).length === 0; 
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -68,7 +75,7 @@ const UserForm = () => {
         id: uuidv4(),
       };
 
-      const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
+      const existingUsers: UserData[] = JSON.parse(localStorage.getItem('users') || '[]');
       localStorage.setItem('users', JSON.stringify([...existingUsers, userData]));
 
       setFormData(initialFormData);
@@ -91,7 +98,7 @@ const UserForm = () => {
 
       <form onSubmit={handleSubmit} className="max-w-md mx-auto p-8 bg-white/50 backdrop-blur-sm rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100">
         <div className="space-y-6">
-          {Object.keys(initialFormData).map((key) => ( 
+          {Object.keys(initialFormData).map((key) => (
             <div className="relative" key={key}>
               <input
                 type={key === 'email' ? 'email' : key === 'phone' ? 'tel' : 'text'}
@@ -99,18 +106,18 @@ const UserForm = () => {
                 name={key}
                 value={formData[key as keyof typeof formData]}
                 onChange={handleChange}
-                className={`peer w-full border-b-2 ${formErrors[key as keyof typeof formErrors] ? 'border-red-500' : 'border-gray-300'} bg-transparent pt-4 pb-1.5 text-sm text-gray-900 focus:border-blue-600 focus:outline-none`}
+                className={`peer w-full border-b-2 ${formErrors[key as keyof FormErrors] ? 'border-red-500' : 'border-gray-300'} bg-transparent pt-4 pb-1.5 text-sm text-gray-900 focus:border-blue-600 focus:outline-none`}
                 placeholder=" "
                 required
               />
               <label
                 htmlFor={key}
-                className={`absolute left-0 top-2 text-gray-500 text-xs transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-600 ${formErrors[key as keyof typeof formErrors] ? 'text-red-500' : ''}`}
+                className={`absolute left-0 top-2 text-gray-500 text-xs transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-600 ${formErrors[key as keyof FormErrors] ? 'text-red-500' : ''}`}
               >
                 {key.charAt(0).toUpperCase() + key.slice(1)}
               </label>
-              {formErrors[key as keyof typeof formErrors] && ( 
-                <p className="text-red-500 text-sm mt-1">{formErrors[key as keyof typeof formErrors]}</p>
+              {formErrors[key as keyof FormErrors] && (
+                <p className="text-red-500 text-sm mt-1">{formErrors[key as keyof FormErrors]}</p>
               )}
             </div>
           ))}

@@ -21,8 +21,9 @@ const formats = [
 ];
 
 const RichTextEditor = ({ initialContent = '', onSave }: RichTextEditorProps) => {
-  const [content, setContent] = useState(initialContent);
-  const [isSaved, setIsSaved] = useState(false);
+  // Explicitly typing the 'content' state as a string
+  const [content, setContent] = useState<string>(initialContent);
+  const [isSaved, setIsSaved] = useState<boolean>(false);
 
   useEffect(() => {
     const savedContent = localStorage.getItem('editorContent');
@@ -35,7 +36,9 @@ const RichTextEditor = ({ initialContent = '', onSave }: RichTextEditorProps) =>
     setContent(value);
     setIsSaved(false);
     localStorage.setItem('editorContent', value);
-    onSave?.(value);
+    if (onSave) {
+      onSave(value);
+    }
   };
 
   const handleSave = () => {

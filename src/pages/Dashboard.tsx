@@ -24,12 +24,17 @@ ChartJS.register(
 const Dashboard = () => {
   const { user, logout } = useAuth();
 
+  // Conditional check for user to prevent errors when user is not logged in
+  if (!user) {
+    return <div>Loading...</div>; // or a redirect to login
+  }
+
   const chartData = {
     labels: ["Mon", "Tue", "Wed", "Thu", "Fri"],
     datasets: [
       {
         label: "User Activity",
-        data: [3, 5, 2, 8, 6], 
+        data: [3, 5, 2, 8, 6],
         borderColor: "rgb(75, 192, 192)",
         tension: 0.4,
       },
@@ -42,8 +47,10 @@ const Dashboard = () => {
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-4">
             <img
-              src={"https://static.vecteezy.com/system/resources/thumbnails/027/951/137/small_2x/stylish-spectacles-guy-3d-avatar-character-illustrations-png.png"}
-              alt="Profile"
+              src={
+                "https://static.vecteezy.com/system/resources/thumbnails/027/951/137/small_2x/stylish-spectacles-guy-3d-avatar-character-illustrations-png.png"
+              }
+              alt={`${user.displayName}'s avatar`} // Updated alt text
               className="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
             />
             <div>
@@ -51,7 +58,13 @@ const Dashboard = () => {
               <p className="text-sm text-gray-500">{user.email}</p>
             </div>
           </div>
-        
+          {/* Logout Button (optional) */}
+          <button
+            onClick={logout}
+            className="bg-red-500 text-white rounded px-4 py-2"
+          >
+            Logout
+          </button>
         </div>
       </header>
 
