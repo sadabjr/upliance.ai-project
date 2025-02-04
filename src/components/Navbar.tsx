@@ -16,7 +16,7 @@ const Navbar = () => {
         <Link to="/" className="text-2xl font-bold text-white hover:text-indigo-300">
           My App
         </Link>
-        <div className="flex items-center space-x-4"> {/* Use flex for better alignment */}
+        <div className="flex items-center space-x-4">
           <Link
             to="/"
             className="text-lg font-medium hover:text-indigo-300 transition duration-300"
